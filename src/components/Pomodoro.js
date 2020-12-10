@@ -17,7 +17,43 @@ class Pomodoro extends React.Component {
 
     render() {
         return (
-            <div>Hello World</div>
+            <div>
+                <Container className="container">
+
+                    <Row>
+                        <Col><h2>Pomodoro Clock</h2></Col>
+                    </Row>
+
+                    <Row>
+                        <Col xs={6}><h3>Break Length</h3></Col>
+                        <Col xs={6}><h3>Session Length</h3></Col>
+                    </Row>
+
+                    <div>
+                        <Row>
+                            <Col><p>Clock Header</p></Col>
+                        </Row>
+
+                        <Row>
+                            <Col><h1>Clock Time</h1></Col>
+                        </Row>
+                    </div>
+
+                    <Row>
+                        <Col xs={4}>
+                            <Button className="btn">Start</Button>
+                        </Col>
+                        <Col xs={4}>
+                            <Button className="btn">Stop</Button>
+                        </Col>
+                        <Col xs={4}>
+                            <Button className="btn">Reset</Button>
+                        </Col>
+                    </Row>
+
+
+                </Container>
+            </div>
         );
     }
 };
