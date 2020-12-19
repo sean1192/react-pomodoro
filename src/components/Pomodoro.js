@@ -1,8 +1,11 @@
 import React from 'react';
-import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import {MdPlayArrow} from 'react-icons/md';
+import {MdPause} from 'react-icons/md';
+import {MdRefresh} from 'react-icons/md';
+import './Pomodoro.css';
 
 class Pomodoro extends React.Component {
     constructor(props) {
@@ -24,8 +27,14 @@ class Pomodoro extends React.Component {
 
     // Resets clock to session length and updates status to Session
     reset() {
+
+        var minutesLeft = this.state.sessionLength;
+        if (minutesLeft < 10) {
+            minutesLeft = "0" + minutesLeft
+        }
+
         this.setState(state=>({
-            minutesLeft: this.state.sessionLength,
+            minutesLeft: minutesLeft,
             secondsLeft: "00",
             clockType: "Session",
             countdown: false
@@ -34,6 +43,7 @@ class Pomodoro extends React.Component {
         this.alarmSound.currentTime = 0;
     }
 
+    // Controls the countdown based on user input
     controlTimer(control) {
 
         if (control === "Start") {
@@ -55,6 +65,7 @@ class Pomodoro extends React.Component {
         }
     }
 
+    // Initiates a countdown with the mins/secs left
     countdown() {
 
         var seconds = parseInt(this.state.secondsLeft);
@@ -94,13 +105,20 @@ class Pomodoro extends React.Component {
         
     }
 
+    // Changes clockType and resets time
     changeTimer() {
         
         var clockType = this.state.clockType;
 
         if (clockType === "Session") {
+
+            var minutesLeft = this.state.breakLength;
+            if (minutesLeft < 10) {
+                minutesLeft = "0" + minutesLeft
+            }
+
             this.setState(state=>({
-                minutesLeft: this.state.breakLength,
+                minutesLeft: minutesLeft,
                 secondsLeft: "00",
                 clockType: "Break",
                 countdown: false
@@ -108,8 +126,12 @@ class Pomodoro extends React.Component {
         }
 
         else if (clockType === "Break") {
+            minutesLeft = this.state.sessionLength;
+            if (minutesLeft < 10) {
+                minutesLeft = "0" + minutesLeft
+            }
             this.setState(state=>({
-                minutesLeft: this.state.sessionLength,
+                minutesLeft: minutesLeft,
                 secondsLeft: "00",
                 clockType: "Session",
                 countdown: false
@@ -119,15 +141,20 @@ class Pomodoro extends React.Component {
         this.controlTimer("Start");
     }
 
+    // Increments the sessionLength or breakLength
     increment(status) {
         if (status === "Session" && this.state.clockActive === false) {
 
-            const shouldUpdate = this.updateTime(this.state.sessionLength, "increment");
-            const updatedMinutes = this.state.sessionLength + 1;
+            var shouldUpdate = this.updateTime(this.state.sessionLength, "increment");
+            var updatedMinutes = this.state.sessionLength + 1;
+
+            if (updatedMinutes < 10) {
+                updatedMinutes = "0" + updatedMinutes
+            }
 
             if (shouldUpdate) {
                 this.setState(state=>({
-                    sessionLength: updatedMinutes,
+                    sessionLength: parseInt(updatedMinutes),
                     minutesLeft: updatedMinutes,
                     secondsLeft: "00"
                 })) 
@@ -135,29 +162,38 @@ class Pomodoro extends React.Component {
             
         } else if (status === "Break" && this.state.clockActive === false) {
 
-            const shouldUpdate = this.updateTime(this.state.breakLength, "increment");
-            const updatedMinutes = this.state.sessionLength + 1;
+            shouldUpdate = this.updateTime(this.state.breakLength, "increment");
+            updatedMinutes = this.state.breakLength + 1;
+
+            if (updatedMinutes < 10) {
+                updatedMinutes = "0" + updatedMinutes
+            }
 
             if (shouldUpdate) {
                 this.setState(state=>({
-                    breakLength: this.state.breakLength + 1,
-                    minutesLeft: updatedMinutes,
+                    breakLength: parseInt(updatedMinutes),
+                    //minutesLeft: updatedMinutes,
                     secondsLeft: "00"
                 }))
             }
         }
     }
 
+    // Decrements the sessionLength or breakLength
     decrement(status) {
 
         if (status === "Session" && this.state.clockActive === false) {
 
-            const shouldUpdate = this.updateTime(this.state.sessionLength, "decrement");
-            const updatedMinutes = this.state.sessionLength - 1;
+            var shouldUpdate = this.updateTime(this.state.sessionLength, "decrement");
+            var updatedMinutes = this.state.sessionLength - 1;
+
+            if (updatedMinutes < 10) {
+                updatedMinutes = "0" + updatedMinutes
+            }
 
             if (shouldUpdate) {
                 this.setState(state=>({
-                    sessionLength: updatedMinutes,
+                    sessionLength: parseInt(updatedMinutes),
                     minutesLeft: updatedMinutes,
                     secondsLeft: "00"
                 }))
@@ -169,12 +205,13 @@ class Pomodoro extends React.Component {
 
             if (shouldUpdate) {
                 this.setState(state=>({
-                    breakLength: this.state.breakLength - 1
+                    breakLength: parseInt(this.state.breakLength - 1)
                 }))
             }
         }
     }
 
+    // Determines whether or not to update the time based on constraints
     updateTime(length, action) {
         
         if (length === 1 && action === "decrement") {
@@ -193,7 +230,7 @@ class Pomodoro extends React.Component {
         
         // Set text to red when < 1 min remains on the clock
         let textStyle = {
-            color: 'black'
+            color: 'white'
         }
 
         if(this.state.minutesLeft === "00") {
@@ -211,40 +248,40 @@ class Pomodoro extends React.Component {
                     </Row>
 
                     <Row>
-                        <Col xs={6}>
+                        <Col xs={6} className="text-center">
                             <h3>Break Length</h3>
-                            <Button onClick={()=>this.increment("Break")}>+</Button>
-                            <p>{this.state.breakLength}</p>
-                            <Button onClick={()=>this.decrement("Break")}>-</Button>
+                            <button onClick={()=>this.increment("Break")}>+</button>
+                            <p className="d-inline duration">{this.state.breakLength}</p>
+                            <button onClick={()=>this.decrement("Break")}>-</button>
                         </Col>
 
-                        <Col xs={6}>
+                        <Col xs={6} className="text-center">
                             <h3>Session Length</h3>
-                            <Button onClick={()=>this.increment("Session")}>+</Button>
-                            <p>{this.state.sessionLength}</p>
-                            <Button onClick={()=>this.decrement("Session")}>-</Button>
+                            <button onClick={()=>this.increment("Session")}>+</button>
+                            <p className="d-inline duration">{this.state.sessionLength}</p>
+                            <button onClick={()=>this.decrement("Session")}>-</button>
                         </Col>
                     </Row>
 
-                    <div>
-                        <Row>
-                            <Col><p style={textStyle}>{this.state.clockType}</p></Col>
-                        </Row>
-
+                    <div className="text-center">
                         <Row>
                             <Col><h1 style={textStyle}>{this.state.minutesLeft}:{this.state.secondsLeft}</h1></Col>
                         </Row>
+                        
+                        <Row>
+                            <Col><p style={textStyle}>{this.state.clockType}</p></Col>
+                        </Row>
                     </div>
 
-                    <Row>
-                        <Col xs={4}>
-                            <Button onClick={()=>this.controlTimer("Start")}>Start</Button>
+                    <Row className="text-center">
+                        <Col xs={4} className="text-right">
+                            <button onClick={()=>this.controlTimer("Start")}><MdPlayArrow /></button>
                         </Col>
                         <Col xs={4}>
-                            <Button onClick={()=>this.controlTimer("Stop")}>Stop</Button>
+                            <button onClick={()=>this.controlTimer("Stop")}><MdPause /></button>
                         </Col>
-                        <Col xs={4}>
-                            <Button onClick={this.reset}>Reset</Button>
+                        <Col xs={4} className="text-left">
+                            <button onClick={this.reset}><MdRefresh /></button>
                         </Col>
                     </Row>
                 </Container>
